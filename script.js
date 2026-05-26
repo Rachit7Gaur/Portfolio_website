@@ -46,3 +46,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
   observer.observe(contactForm);
 });
+
+// ===== Contact Form Submission (Formspree) =====
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.querySelector("#contact form");
+  const messageBox = document.getElementById("form-message");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // Show "Sending..." state
+    messageBox.textContent = "⏳ Sending...";
+    messageBox.className = "";
+    messageBox.style.display = "block";
+
+    try {
+      const response = await fetch(form.action, {
+        method: form.method,
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (response.ok) {
+        messageBox.textContent = "✅ Thank you! Your message has been sent.";
+        messageBox.className = "success";
+        form.reset();
+      } else {
+        messageBox.textContent = "❌ Oops! Something went wrong. Please try again.";
+        messageBox.className = "error";
+      }
+    } catch (error) {
+      messageBox.textContent = "❌ Network error. Please try again later.";
+      messageBox.className = "error";
+    }
+
+    // Auto-hide after 4 seconds
+    setTimeout(() => {
+      messageBox.style.display = "none";
+    }, 4000);
+  });
+});
